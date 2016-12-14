@@ -2,16 +2,43 @@
 #include <ctime>
 #include <vector>
 
+class MYVec
+{
+public:
+    int num;
+    std::vector<int> my_vec;
+    
+    MYVec () : my_vec(1000)
+    {
+    }
+    
+    MYVec (int num_) : num(num_)
+    {
+        my_vec.reserve(num);
+        for (int i=0; i<num; ++i)
+            my_vec[i] = clock();
+    }
+    
+    MYVec& operator=(MYVec&& other)
+    {
+        std::cout << "Move" << std::endl;
+        my_vec = std::move(other.my_vec);
+        return *this;
+    }
+};
+
 class X
 {
 public:
     std::vector<int> m_vec;
- 
+    MYVec tmp_vec;
+    
 public:
     X() : m_vec(10000000)
     {
         for (size_t i = 0 ; i < 10000000; ++i )
             m_vec[i] = i;
+
     }
  
     //복사 생성자
@@ -22,15 +49,16 @@ public:
  
     X& operator=(const X& other)
     {
-        std::cout << "Copy" << std::endl;
+        std::cout << "Copy =" << std::endl;
         m_vec = other.m_vec;
         return *this;
     }
  
     X& operator=(X&& other)
     {
-        std::cout << "Move" << std::endl;
+        std::cout << "Move =" << std::endl;
         m_vec = std::move(other.m_vec);
+        tmp_vec = std::move(other.tmp_vec);
         return *this;
     }
 };
@@ -38,6 +66,7 @@ public:
 int main()
 {
     X x1; 
+    x1.tmp_vec.my_vec.resize(3);
  
     //복사 시간 확인
 
@@ -60,10 +89,12 @@ int main()
 //    X x3(std::move(x1));
     clock_t mt2 = clock();
     double msec2 = 1000.0 * (mt2-mt1) / CLOCKS_PER_SEC;
-    std::cout << "Move time: " << msec2 << " msec" << std::endl;
+    std::cout << "Move time: " << msec2 << " msec / my_vec size " << x1.tmp_vec.my_vec.size() << " / " <<  x3.tmp_vec.my_vec.size() << std::endl;
     for (int i=0; i<10; i++)
         std::cout << x3.m_vec[i] << std::endl;
     
+    
+    // vector examples
     std::cout << "vector example " << std::endl;
     std::vector <double> tmp(1000000);
     for (int i=0; i<1000000; i++)
