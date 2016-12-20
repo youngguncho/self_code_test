@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <array>
 
 using namespace std;
@@ -22,6 +23,16 @@ inline double toc (clock_t tic_t, string title)
     return msec;
 }
 
+// Declaring the type of Predicate that accepts 2 pairs and return a bool
+typedef std::function<bool(std::pair<std::string, int>, std::pair<std::string, int>)> Comparator;
+
+// Defining a lambda function to compare two pairs. It will compare two pairs using second field
+Comparator compFunctor =
+	[](std::pair<std::string, int> elem1 ,std::pair<std::string, int> elem2)
+	{
+		return elem1.second > elem2.second;
+	};
+
 
 inline void print_title (int i) 
 {
@@ -30,24 +41,21 @@ inline void print_title (int i)
 
 int main(void)
 {
-    int total_elements = 1;
-    clock_t tic_t = tic();
-    
-    vector <int> cardinal {1, 2, 3, 4, 5};
-    map < int, vector<double> > map_cache;
+	// Creating & Initializing a map of String & Ints
+	std::map<std::string, int> mapOfWordCount = { { "aaa", 10 }, { "ddd", 41 },
+			{ "bbb", 62 }, { "ccc", 13 } };
+ 
 
-    for (int i=0; i<10; i++) {
-        double toc_t = toc(tic_t, "push");    
-        vector<double> vec_data = {toc_t};
-        map_cache[i] = vec_data;
-    }   
-    
-    vector <double> vec_cpy;
-    
-    
-    cout << "size " << map_cache.size() << endl;
-    
-    
+	// Declaring a set that will store the pairs using above comparision logic
+	std::set<std::pair<std::string, int>, Comparator> setOfWords(
+			mapOfWordCount.begin(), mapOfWordCount.end(), compFunctor);
+ 
+	// Iterate over a set using range base for loop
+	// It will display the items in sorted order of values
+	for (std::pair<std::string, int> element : setOfWords)
+		std::cout << element.first << " :: " << element.second << std::endl;
+		
+		
     return 0;
     
     

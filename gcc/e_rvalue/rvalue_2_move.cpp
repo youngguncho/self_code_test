@@ -19,12 +19,12 @@ public:
             my_vec[i] = clock();
     }
     
-    MYVec& operator=(MYVec&& other)
-    {
-        std::cout << "Move" << std::endl;
-        my_vec = std::move(other.my_vec);
-        return *this;
-    }
+//    MYVec& operator=(MYVec&& other)
+//    {
+//        std::cout << "Move" << std::endl;
+//        my_vec = std::move(other.my_vec);
+//        return *this;
+//    }
 };
 
 class X
@@ -61,8 +61,20 @@ public:
         tmp_vec = std::move(other.tmp_vec);
         return *this;
     }
+    
+    void run ();
 };
- 
+
+
+void X::run ()
+{
+    MYVec vec_in_fcn(9999);
+    vec_in_fcn.my_vec.resize(10000000);
+    vec_in_fcn.my_vec[0] = 1234;
+    this->tmp_vec = std::move(vec_in_fcn);
+}
+
+
 int main()
 {
     X x1; 
@@ -92,6 +104,11 @@ int main()
     std::cout << "Move time: " << msec2 << " msec / my_vec size " << x1.tmp_vec.my_vec.size() << " / " <<  x3.tmp_vec.my_vec.size() << std::endl;
     for (int i=0; i<10; i++)
         std::cout << x3.m_vec[i] << std::endl;
+        
+        
+    std::cout << "For tmp func " << std::endl;
+    x3.run();
+    std::cout << "New x3 size by tmp " <<  x3.tmp_vec.my_vec.size() << " / " << x3.tmp_vec.my_vec[0] << std::endl;
     
     
     // vector examples
@@ -100,7 +117,6 @@ int main()
     for (int i=0; i<1000000; i++)
         tmp[i] = clock();
     
-    std::cout << "vector example " << std::endl;
     std::vector <double> tmp2;
     std::vector <double> tmp3;
     
